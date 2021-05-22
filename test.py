@@ -1,3 +1,5 @@
+#!usr/bin/python3
+
 # APR: interes simple anual
 # mpr: interes mensual
 # dpr: interes diario
@@ -93,6 +95,3 @@ if __name__ == '__main__':
         else:
             simple_interest(cap, apr)
         command = input(f'{"--"*17}\nAny key to continue, X to Exit\n>')
-
-
-
