@@ -13,11 +13,11 @@ def simple_interest(cap, apr):
         {'period': 'Daily', 'interest': apr/365 },
         {'period': 'Hour ', 'interest': (apr/365)/24 }
     ]
-    print(f'{"--"*17}\n*** Interes Simple ***\n{"--"*17}')
+    header("Interes Simple")
     for item in periods:
         income = round(cap * item["interest"], 4)
         interest = round(item["interest"] * 100, 4)
-        print(f'{item["period"]}: $ {income} ({interest}%)')
+        print(f'{item["period"]}: ${income} ({interest}%)')
 
 
 def compound(apr, cap, gas):
@@ -29,26 +29,29 @@ def compound(apr, cap, gas):
     comp_month = [
         {'freq': '30 dias ', 'iter': 1},
         {'freq': '15 dias ', 'iter': 2},
-        {'freq': '07 dias ', 'iter': 30/4},
+        {'freq': '10 dias ', 'iter': 3},
+        {'freq': '06 dias ', 'iter': 5},
+        {'freq': '05 dias ', 'iter': 6},
         {'freq': '03 dias ', 'iter': 10},
-        {'freq': '01 dias ', 'iter': 30},
-        {'freq': '12 horas', 'iter': 60},
-        {'freq': '06 horas', 'iter': 120},
-        {'freq': '01 horas', 'iter': 720}
+        {'freq': '02 dias ', 'iter': 15},
+        {'freq': '01 dias ', 'iter': 30}
     ]
-    print(f'{"--"*17}\n*** Ingreso Mensual Compuesto ***\n{"--"*17}')
+    header("Ingreso Mensual Compuesto")
     for item in comp_month:
         spent_gas = gas * item["iter"]
         earnings = (cap * (1 + mpr/item["iter"])** item["iter"]) - spent_gas
         item['earning'] = earnings
         item['spent_gas'] = spent_gas
+        item['net_income'] = earnings - spent_gas
         print(f'Cada {item["freq"]}: $ {round(earnings, 4)}. Gas $ {round(spent_gas, 4)}')
-    # Calculamos la refuencia óptima
-    best = max(comp_month, key= lambda b: b['earning'])
-    print(f'*** La frecuencia óptima es:\nCada {best["freq"]}, para generar $ {round(best["earning"], 4)}.')
+    # Calculamos la frecuencia con mayor ganancia
+    best = max(comp_month, key= lambda b: b['net_income'])
+    print(f'*** La frecuencia óptima es:\nCada {best["freq"]}, para generar $ {round(best["net_income"], 4)}.')
     # INTERES COMPUESTO AL DIA
+    '''
     comp_daily = [
         {'freq': '12 horas', 'iter': 2},
+        {'freq': '08 horas', 'iter': 3},
         {'freq': '06 horas', 'iter': 4},
         {'freq': '04 horas', 'iter': 6},
         {'freq': '03 horas', 'iter': 8},
@@ -64,12 +67,17 @@ def compound(apr, cap, gas):
         print(f'Cada {item["freq"]}: $ {round(earnings, 4)}. Gas $ {round(spent_gas, 4)}')
     best = max(comp_daily, key= lambda b: b['earning'])
     print(f'*** La frecuencia óptima es:\nCada {best["freq"]}, para generar $ {round(best["earning"], 4)}.')
+    '''
+
+
+def header(title):
+    print(f'{"--"*17}\n*** {title} ***\n{"--"*17}')
 
 
 if __name__ == '__main__':
     command = ''
     while command.lower() != 'x':
-        print(f'{"--"*17}\n*** Calculadora para Stake pool ***\n{"--"*17}')
+        header("Calculadora para Stake pool")
         cap = float(input('Capital ($): '))
         apr = float(input('Interes (%): '))
         interest = input('Interes (S/C): ').lower()
