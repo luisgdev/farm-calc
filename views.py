@@ -9,11 +9,12 @@ def separator():
 
 
 def comp_item(item):
-    print(f'Cada {item["freq"]}: ${round(item["earning"], 4)}. Gas ${round(item["spent_gas"], 4) }')
+    print(f'A {item["freq"]} días: ${round(item["yield"], 4)} - ${round(item["spent_gas"], 4) } = ${round(item["earning"], 4)}')
 
 
 def best_comp(item):
-    print(f'*** La frecuencia óptima es:\nCada {item["freq"]} días -> ${round(item["earning"], 4)}')
+    separator()
+    print(f'La frecuencia óptima es:\n\tCada {item["freq"]} días -> ${round(item["earning"], 4)}')
 
 
 if __name__ == '__main__':
