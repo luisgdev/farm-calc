@@ -40,21 +40,24 @@ def compound(apr, cap, gas, days):
         item['earning'] = earnings - spent_gas - cap
         item['spent_gas'] = spent_gas
         views.comp_item(item)
-    # Calculamos la frecuencia con mayor ganancia
-    best = max(comp_month, key= lambda b: b['earning'])
+    # Calculamos las frecuencias con mayor ganancia
+    best = sorted(comp_month, key= lambda b: b['earning'], reverse=True)[:3]
     views.best_comp(best)
+    # Calculamos la frecuencia recomendada (mayor freq, menos ciclos)
+    recom = max(best, key= lambda x: x['freq'])
+    views.recom_comp(recom)
 
 
 if __name__ == '__main__':
     command = ''
     while command.lower() != 'x':
-        views.header("Calculadora para Stake pool")
-        cap = float(input('Capital ($): '))
-        apr = float(input('Interes (%): '))
-        interest = input('Interes (S/C): ').lower()
+        views.header("Calculadora para Staking pool")
+        cap = float(input('Capital  ($): '))
+        apr = float(input('APR      (%): '))
+        interest = input('Tipo   (S/C): ').lower()
         if interest == 'c':
             days = int(input('Staking days: '))
-            gas = float(input('Gas fee ($): '))
+            gas = float(input('Gas fee  ($): '))
             compound(apr, cap, gas, days)
         else:
             simple_interest(cap, apr)
