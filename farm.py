@@ -29,17 +29,16 @@ def compound(apr, cap, gas, days):
     dpr = apr/365
     # INTERES COMPUESTO A LOS N DIAS
     interest = days * dpr
-    comp_month = gen_comp_cycles(days)
-    views.header(f'Compuesto a los {days} días')
-    for item in comp_month:
+    periods = gen_comp_cycles(days)
+    for item in periods:
         spent_gas = gas * item["iter"]
         earnings = (cap * (1 + interest/item["iter"])** item["iter"])
         item['yield'] = earnings - cap
         item['earning'] = earnings - spent_gas - cap
         item['spent_gas'] = spent_gas
-        views.comp_item(item)
+    views.compound(periods)
     # Calculamos las frecuencias con mayor ganancia
-    best = sorted(comp_month, key= lambda b: b['earning'], reverse=True)[:3]
+    best = sorted(periods, key= lambda b: b['earning'], reverse=True)[:3]
     views.best_comp(best)
     # Calculamos la frecuencia recomendada (mayor freq, menos ciclos)
     recom = max(best, key= lambda x: x['freq'])
@@ -49,15 +48,15 @@ def compound(apr, cap, gas, days):
 if __name__ == '__main__':
     command = ''
     while command.lower() != 'x':
-        views.header("Calculadora para Staking pool")
-        cap = float(input('Cap....($): '))
-        apr = float(input('APR....(%): '))
-        interest = input('Tipo.(s/c): ').lower()
-        if interest == 'c':
-            days = int(input('Staking days: '))
-            gas = float(input('Gas fee  ($): '))
+        views.print_markdown("# Calculadora para Staking pool")
+        interest = input(' • Tipo de interes, (S)imple o (C)ompuesto: ').lower()
+        cap = float(input(' • Capital($): '))
+        apr = float(input(' • APR....(%): '))
+        if interest.startswith('c'):
+            days = int(input(' • Stake days: '))
+            gas = float(input(' • Gas fee($): '))
             compound(apr, cap, gas, days)
         else:
             simple_interest(cap, apr)
-        views.separator()
+        #views.print_markdown('___')
         command = input('Any key to continue, X to Exit\n>')

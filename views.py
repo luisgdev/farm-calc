@@ -4,9 +4,15 @@ from rich.table import Table
 from rich import box
 
 
+def print_markdown(text):
+    md = Markdown(text)
+    Console().print(md)
+
+
 def simple_interest(periods):
+    print_markdown('***')
     table = Table(title='Interes Simple', box=box.SIMPLE)
-    header = ['Period', 'Income($)', 'Profit(%)']
+    header = ['Period', 'Yield($)', 'Profit(%)']
     for item in header:
         table.add_column(item)
     for item in periods:
@@ -17,31 +23,34 @@ def simple_interest(periods):
     Console().print(table)
 
 
-def header(title):
-    md = Markdown(f'# {title}')
-    Console().print(md)
-
-
-def separator():
-    md = Markdown('___')
-    Console().print(md)
-
-
-def comp_item(item):
-    print(f'A {item["freq"]} días: ${round(item["yield"], 4)} - ${round(item["spent_gas"], 4) } = ${round(item["earning"], 4)}')
+def compound(periods):
+    print_markdown('---')
+    table = Table(title=f'Interes Compuesto por {periods[0]["freq"]} días', box=box.SIMPLE)
+    header = ['Period', 'Yield($)', 'Gas($)', 'Earned($)']
+    for item in header:
+        table.add_column(item)
+    for item in periods:
+        _yield = round(item["yield"], 4)
+        spent_gas = round(item["spent_gas"], 4)
+        earned = round(item["earning"], 4)
+        table.add_row(str(item["freq"]), str(_yield), str(spent_gas), str(earned))
+    Console().print(table)
 
 
 def best_comp(b_list):
-    separator()
-    print('Frecuencias óptimas:')
+    print_markdown('___')
+    table = Table(title=f'Frecuencias Óptimas', box=box.SIMPLE)
+    header = ['Period', 'Earnings($)']
+    for item in header:
+        table.add_column(item)
     for item in b_list:
-        print(f'\tCada {item["freq"]} días -> ${round(item["earning"], 4)}')
+        table.add_row(f'Cada {item["freq"]} días', str(round(item["earning"], 4)))
+    Console().print(table)
 
 
 def recom_comp(item):
-    separator()
-    print(f'Recomendado:\n\tCada {item["freq"]} días -> ${round(item["earning"], 4)}')
-
+    recom = f'Recomendado: Cada {item["freq"]} días, para obtener ${round(item["earning"], 4)}'
+    Console().print(recom, style="bold green")
 
 
 if __name__ == '__main__':
