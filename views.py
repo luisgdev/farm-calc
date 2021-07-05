@@ -18,7 +18,6 @@ def simple_interest(periods):
     for item in periods:
         income = round(item["income"], 4)
         interest = round(item["interest"] * 100, 4)
-        #print(f'{item["period"]}: ${income} ({interest}%)')
         table.add_row(item["period"], str(income), str(interest))
     Console().print(table)
 
@@ -55,7 +54,7 @@ def best_comp(b_list):
 
 
 def recom_comp(item):
-    recom = f'Recomendado: Cada {item["freq"]} días, para obtener ${round(item["earning"], 4)}'
+    recom = f'Recomendado: Cada {item["freq"]} días.'
     Console().print(recom, style="bold green")
 
 

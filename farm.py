@@ -30,11 +30,7 @@ def compound(apr, cap, gas, days):
     # INTERES COMPUESTO A LOS N DIAS
     interest = days * dpr
     periods = gen_comp_cycles(days)
-    # Diferencia entre (earned, earned-1)
-    # Guardamos ese earned anterior en prev
-
-    # Hay que tomar en cuenta la diferencia entre Period*gas y Earned
-
+    # Diferencia entre valor actual y el anterior para: earned y gas
     prev = 0
     prev_gas = 0
     for item in periods:
@@ -56,16 +52,14 @@ def compound(apr, cap, gas, days):
     # Filtramos, descartando las pérdidas
     cond = lambda item: item['dif'] > item['dif_gas']
     periods = list(filter(cond, periods))
-    # Calculamos las frecuencias con mayor ganancia
-    #best = sorted(periods, key= lambda b: b['earning'], reverse=True)[:3]
-    best = periods[-3:]
-    # Calculamos la frecuencia recomendada
-    if len(best) > 0:
+    # Mostramos las frecuencias con mayor ganancia
+    if len(periods) > 0:
+        best = periods[-3:]
         views.best_comp(best)
         recom = max(best, key= lambda x: x['freq'])
         views.recom_comp(recom)
     else:
-        print(' El valor de "Dif" debe ser mayor a "Dif Gas", de lo contrario hay pérdida.')
+        print(' El valor de "Dif" debe ser mayor a "Dif Gas", de lo contrario existe pérdida.')
         print(' El capital es muy bajo para hacer compuesto con ese gas fee.')
         print(' Se recomienda más días en stake, mayor APR o interes simple.\n')
 
@@ -83,5 +77,4 @@ if __name__ == '__main__':
             compound(apr, cap, gas, days)
         else:
             simple_interest(cap, apr)
-        #views.print_markdown('___')
-        command = input('Any key to continue, X to Exit\n>')
+        command = input('Any key to continue, (X) to Exit\n>')
