@@ -30,19 +30,44 @@ def compound(apr, cap, gas, days):
     # INTERES COMPUESTO A LOS N DIAS
     interest = days * dpr
     periods = gen_comp_cycles(days)
+    # Diferencia entre (earned, earned-1)
+    # Guardamos ese earned anterior en prev
+
+    # Hay que tomar en cuenta la diferencia entre Period*gas y Earned
+
+    prev = 0
+    prev_gas = 0
     for item in periods:
         spent_gas = gas * item["iter"]
         earnings = (cap * (1 + interest/item["iter"])** item["iter"])
         item['yield'] = earnings - cap
         item['earning'] = earnings - spent_gas - cap
         item['spent_gas'] = spent_gas
+        if prev != 0:
+            item['dif'] = item['earning'] - prev
+            item['dif_gas'] = spent_gas - prev_gas
+        else:
+            item['dif'] = prev
+            item['dif_gas'] = prev_gas
+        prev = item['earning']
+        prev_gas = spent_gas
+        item['profit'] = item['earning']/cap*100
     views.compound(periods)
+    # Filtramos, descartando las pérdidas
+    cond = lambda item: item['dif'] > item['dif_gas']
+    periods = list(filter(cond, periods))
     # Calculamos las frecuencias con mayor ganancia
-    best = sorted(periods, key= lambda b: b['earning'], reverse=True)[:3]
-    views.best_comp(best)
-    # Calculamos la frecuencia recomendada (mayor freq, menos ciclos)
-    recom = max(best, key= lambda x: x['freq'])
-    views.recom_comp(recom)
+    #best = sorted(periods, key= lambda b: b['earning'], reverse=True)[:3]
+    best = periods[-3:]
+    # Calculamos la frecuencia recomendada
+    if len(best) > 0:
+        views.best_comp(best)
+        recom = max(best, key= lambda x: x['freq'])
+        views.recom_comp(recom)
+    else:
+        print(' El valor de "Dif" debe ser mayor a "Dif Gas", de lo contrario hay pérdida.')
+        print(' El capital es muy bajo para hacer compuesto con ese gas fee.')
+        print(' Se recomienda más días en stake, mayor APR o interes simple.\n')
 
 
 if __name__ == '__main__':

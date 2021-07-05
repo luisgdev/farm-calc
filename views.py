@@ -26,25 +26,31 @@ def simple_interest(periods):
 def compound(periods):
     print_markdown('---')
     table = Table(title=f'Interes Compuesto por {periods[0]["freq"]} días', box=box.SIMPLE)
-    header = ['Period', 'Yield($)', 'Gas($)', 'Earned($)']
+    header = ['Period', 'Yield($)', 'Gas($)', 'Earned($)', 'Dif($)', 'Dif Gas($)', 'Profit(%)']
     for item in header:
         table.add_column(item)
     for item in periods:
-        _yield = round(item["yield"], 4)
-        spent_gas = round(item["spent_gas"], 4)
-        earned = round(item["earning"], 4)
-        table.add_row(str(item["freq"]), str(_yield), str(spent_gas), str(earned))
+        _yield = str(round(item["yield"], 4))
+        spent_gas = str(round(item["spent_gas"], 4))
+        earned = str(round(item["earning"], 4))
+        dif = str(round(item['dif'], 4))
+        dif_gas = str(round(item['dif_gas'], 4))
+        profit = str(round(item['profit'], 2))
+        table.add_row(str(item["freq"]), _yield, spent_gas, earned, dif, dif_gas, profit)
     Console().print(table)
 
 
 def best_comp(b_list):
     print_markdown('___')
     table = Table(title=f'Frecuencias Óptimas', box=box.SIMPLE)
-    header = ['Period', 'Earnings($)']
+    header = ['Period', 'Earnings($)', 'Profit(%)']
     for item in header:
         table.add_column(item)
     for item in b_list:
-        table.add_row(f'Cada {item["freq"]} días', str(round(item["earning"], 4)))
+        period = f'Cada {item["freq"]} días'
+        earned = str(round(item["earning"], 4))
+        profit = str(round(item['profit'], 2))
+        table.add_row(period, earned, profit)
     Console().print(table)
 
 
