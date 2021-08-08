@@ -1,23 +1,24 @@
+from typing import Dict, List
 from rich.markdown import Markdown
 from rich.console import Console
 from rich.table import Table
 from rich import box
 
 
-def print_markdown(text):
-    md = Markdown(text)
+def print_markdown(text: str) -> None:
+    md: Markdown = Markdown(text)
     Console().print(md)
 
 
-def simple_interest(periods):
+def simple_interest(periods: List[Dict[str, float]]) -> None:
     print_markdown('***')
-    table = Table(title='Interes Simple', box=box.SIMPLE)
-    header = ['Period', 'Yield($)', 'Profit(%)']
+    table: Table = Table(title='Interes Simple', box=box.SIMPLE)
+    header: List[str] = ['Period', 'Yield($)', 'Profit(%)']
     for item in header:
         table.add_column(item)
     for item in periods:
-        income = round(item["income"], 4)
-        interest = round(item["interest"] * 100, 4)
+        income: float = round(item["income"], 4)
+        interest: float = round(item["interest"] * 100, 4)
         table.add_row(item["period"], str(income), str(interest))
     Console().print(table)
 
@@ -25,7 +26,7 @@ def simple_interest(periods):
 def compound(periods):
     print_markdown('---')
     table = Table(title=f'Interes Compuesto por {periods[0]["freq"]} días', box=box.SIMPLE)
-    header = ['Period', 'Yield($)', 'Gas($)', 'Earned($)', 'Dif($)', 'Dif Gas($)', 'Profit(%)']
+    header = ['Day', 'Yield ($)', 'Gas ($)', 'Earned ($)', 'Dif ($)', 'Dif Gas ($)', 'Profit (%)']
     for item in header:
         table.add_column(item)
     for item in periods:
@@ -56,6 +57,16 @@ def best_comp(b_list):
 def recom_comp(item):
     recom = f'Recomendado: Cada {item["freq"]} días.'
     Console().print(recom, style="bold green")
+
+
+def comp_failed():
+    print('''
+        dif > dif_gas : Ganancia
+        dif < dif_gas : Pérdida
+        El valor de "Dif" debe ser mayor a "Dif Gas", de lo contrario existe pérdida.
+        El capital es muy bajo para hacer compuesto con ese gas fee.
+        Se recomienda más días en stake, mayor APR o interes simple.\n
+        ''')
 
 
 if __name__ == '__main__':
