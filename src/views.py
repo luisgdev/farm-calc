@@ -1,72 +1,114 @@
-from typing import Dict, List
-from rich.markdown import Markdown
-from rich.console import Console
-from rich.table import Table
+from typing import TypedDict, Dict, List
+
 from rich import box
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.table import Table
+
+from models import Compound, Period, Simple
+
+CONSOLE = Console()
 
 
 def print_markdown(text: str) -> None:
     md: Markdown = Markdown(text)
-    Console().print(md)
+    CONSOLE.print(md)
 
 
-def simple_interest(periods: List[Dict[str, float]]) -> None:
+def simple_interest(si: Simple) -> None:
     print_markdown('***')
     table: Table = Table(title='Interes Simple', box=box.SIMPLE)
-    header: List[str] = ['Period', 'Yield($)', 'Profit(%)']
-    for item in header:
-        table.add_column(item)
-    for item in periods:
-        income: float = round(item["income"], 4)
-        interest: float = round(item["interest"] * 100, 4)
-        table.add_row(item["period"], str(income), str(interest))
-    Console().print(table)
+    header: List[str] = ['Period', 'Income ($)', 'ROI (%)']
+    for head in header:
+        table.add_column(head)
+    Span = TypedDict('Span', {'period': str, 'income': float, 'roi': float})
+    results: List[Span] = [
+        {'period': 'Annual', 'income': si.annual_income, 'roi': si.apr},
+        {'period': 'Monthly', 'income': si.monthly_income, 'roi': si.monthly},
+        {'period': 'Daily', 'income': si.daily_income, 'roi': si.daily},
+        {'period': 'Hourly', 'income': si.hourly_income, 'roi': si.hourly}
+    ]
+    for item in results:
+        table.add_row(
+            item["period"],
+            f'{round(item["income"], 4)}',
+            f'{round(item["roi"] * 100, 4)}'
+        )
+    CONSOLE.print(table)
 
 
-def compound(periods):
+def compound_interest(comp: Compound) -> None:
     print_markdown('---')
-    table = Table(title=f'Interes Compuesto por {periods[0]["freq"]} días', box=box.SIMPLE)
-    header = ['Day', 'Yield ($)', 'Gas ($)', 'Earned ($)', 'Dif ($)', 'Dif Gas ($)', 'Profit (%)']
-    for item in header:
-        table.add_column(item)
-    for item in periods:
-        _yield = str(round(item["yield"], 4))
-        spent_gas = str(round(item["spent_gas"], 4))
-        earned = str(round(item["earning"], 4))
-        dif = str(round(item['dif'], 4))
-        dif_gas = str(round(item['dif_gas'], 4))
-        profit = str(round(item['profit'], 2))
-        table.add_row(str(item["freq"]), _yield, spent_gas, earned, dif, dif_gas, profit)
-    Console().print(table)
+    table = Table(
+        title=f'Interes Compuesto por {comp.periods[0].days} días',
+        box=box.SIMPLE
+    )
+    header = 'Day,Yield ($),Gas ($),Profit ($),Dif ROI ($),Dif Gas ($),ROI (%)'
+    for col in header.split(','):
+        table.add_column(col)
+    for row in comp.periods:
+        table.add_row(
+            str(row.days),
+            str(round(row._yield, 4)),
+            str(round(row.spent_gas, 4)),
+            str(round(row.profit, 4)),
+            str(round(row.dif_profit, 4)),
+            str(round(row.dif_gas, 4)),
+            str(round(row.roi, 2))
+        )
+    CONSOLE.print(table)
+    comp_note()
+    if comp.best:
+        best_comp(comp.best)
+        recom_comp(comp.recom)
+    else:
+        comp_failed()
 
 
-def best_comp(b_list):
-    print_markdown('___')
-    table = Table(title=f'Frecuencias Óptimas', box=box.SIMPLE)
-    header = ['Period', 'Earnings($)', 'Profit(%)']
-    for item in header:
-        table.add_column(item)
-    for item in b_list:
-        period = f'Cada {item["freq"]} días'
-        earned = str(round(item["earning"], 4))
-        profit = str(round(item['profit'], 2))
-        table.add_row(period, earned, profit)
-    Console().print(table)
-
-
-def recom_comp(item):
-    recom = f'Recomendado: Cada {item["freq"]} días.'
-    Console().print(recom, style="bold green")
+def comp_note() -> None:
+    print_markdown(
+        '''
+        NOTE:
+        - dif_roi > dif_gas : Ganancia
+        - dif_roi < dif_gas : Pérdida
+        '''
+    )
 
 
 def comp_failed():
-    print('''
-        dif > dif_gas : Ganancia
-        dif < dif_gas : Pérdida
-        El valor de "Dif" debe ser mayor a "Dif Gas", de lo contrario existe pérdida.
-        El capital es muy bajo para hacer compuesto con ese gas fee.
-        Se recomienda más días en stake, mayor APR o interes simple.\n
-        ''')
+    print_markdown(
+        '''
+        No es factible! El costo del GAS fee supera al ROI en 
+        todos los escenarios posibles.
+        Causas:
+        - Poco capital para obtener ganancias en el tiempo dado.
+        - El APR no genera lo suficiente para cubrir el gas fee.
+        Recomendaciones:
+        - Hacer stake por un mayor periodo de tiempo.
+        - Reducir el Gas fee.
+        - Invertir en un Pool con mayor APR.
+        - Interes simple en lugar de compuesto.\n
+        '''
+    )
+
+
+def best_comp(best_pds: List[Period]) -> None:
+    print_markdown('___')
+    table = Table(title='Frecuencias Óptimas', box=box.SIMPLE)
+    header = ['Period', 'ROI ($)', 'Profit (%)']
+    for item in header:
+        table.add_column(item)
+    for period in best_pds:
+        duration = f'Cada {period.days} días'
+        earned = str(round(period.profit, 4))
+        profit = str(round(period.roi, 2))
+        table.add_row(duration, earned, profit)
+    CONSOLE.print(table)
+
+
+def recom_comp(pd: Period) -> None:
+    recom = f'Recomendado: Cada {pd.days} días.'
+    CONSOLE.print(recom, style="bold green")
 
 
 if __name__ == '__main__':

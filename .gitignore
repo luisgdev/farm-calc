@@ -130,3 +130,6 @@ dmypy.json
 
 # My virtualenv
 farmcalc_env/
+
+# My Editor
+.vscode/
