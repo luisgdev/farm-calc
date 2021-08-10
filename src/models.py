@@ -3,11 +3,12 @@ from typing import Callable, Dict, List
 
 class Interest:
     """
-    Interest includes: 
+    Interest includes:
     - Capital invested
     - Annual Percentage Rate (APR)
-    - Daily interest from APR 
+    - Daily interest from APR
     """
+
     def __init__(self, capital: float, apr: float) -> None:
         self.cap = capital
         self.apr = apr / 100
@@ -16,10 +17,11 @@ class Interest:
 
 class Simple(Interest):
     """
-    Simple interest includes: 
-    - Additional Monthly and Hourly interests from APR 
+    Simple interest includes:
+    - Additional Monthly and Hourly interests from APR
     - Income for each period of time (year, month, day, hour)
     """
+
     def __init__(self, capital: float, apr: float) -> None:
         Interest.__init__(self, capital, apr)
         self.monthly: float = self.daily * 30
@@ -32,11 +34,12 @@ class Simple(Interest):
 
 class Compound(Interest):
     """
-    Compound interest includes: 
+    Compound interest includes:
     - List of possible Periods for a given number of days and their performance.
     - Top 3 Periods with the best performance and the recomended one.
     - Explanation of relevant indicators (dif)
     """
+
     def __init__(self, cap: float, apr: float, gas: float, days: int) -> None:
         Interest.__init__(self, cap, apr)
         self.periods: List[Period] = []
@@ -48,7 +51,7 @@ class Compound(Interest):
         # Do Compund every x number of days
         for x in range(1, days - 1):
             if days % x == 0:
-                pd = Period(cap=cap, days=int(days/x), cycles=x)
+                pd = Period(cap=cap, days=int(days / x), cycles=x)
                 self.periods.append(pd)
 
     def _calc_periods(self, gas: float, days: int):
@@ -81,12 +84,13 @@ class Compound(Interest):
 class Period:
     """
     Time Period of the Compound interest.
-    It includes: 
+    It includes:
     - Frequency days to execute a cycle (making the compound)
-    - Spent gas fee, Profit, ROI and 
+    - Spent gas fee, Profit, ROI and
     - Difference between last and new compound cycle performance (profit and spent gas).
 
     """
+
     def __init__(self, cap: float, days: int, cycles: int):
         self.cap = cap
         self.days = days
@@ -107,5 +111,5 @@ class Period:
         self.roi = (self.profit / self.cap) * 100
 
 
-if __name__ == '__main__':
-    print('This is not main!')
+if __name__ == "__main__":
+    print("This is not main!")

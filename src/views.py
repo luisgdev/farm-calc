@@ -8,12 +8,12 @@ from rich.table import Table
 from models import Compound, Period, Simple
 
 CONSOLE: Console = Console()
-NOTE: str = '''
+NOTE: str = """
     NOTE:
     - dif_roi > dif_gas : Ganancia
     - dif_roi < dif_gas : Pérdida
-    '''
-FAILED: str = '''
+    """
+FAILED: str = """
     No es factible! El costo del GAS fee supera al ROI en
     todos los escenarios posibles.
     Causas:
@@ -24,7 +24,7 @@ FAILED: str = '''
     - Reducir el Gas fee.
     - Invertir en un Pool con mayor APR.
     - Interes simple en lugar de compuesto.\n
-    '''
+    """
 
 
 def print_markdown(text: str) -> None:
@@ -33,17 +33,17 @@ def print_markdown(text: str) -> None:
 
 
 def simple_interest(si: Simple) -> None:
-    print_markdown('***')
-    table: Table = Table(title='Interes Simple', box=box.SIMPLE)
-    header: List[str] = ['Period', 'Income ($)', 'ROI (%)']
+    print_markdown("***")
+    table: Table = Table(title="Interes Simple", box=box.SIMPLE)
+    header: List[str] = ["Period", "Income ($)", "ROI (%)"]
     for col in header:
         table.add_column(col)
-    Span = TypedDict('Span', {'period': str, 'income': float, 'roi': float})
+    Span = TypedDict("Span", {"period": str, "income": float, "roi": float})
     results: List[Span] = [
-        {'period': 'Annual', 'income': si.annual_income, 'roi': si.apr},
-        {'period': 'Monthly', 'income': si.monthly_income, 'roi': si.monthly},
-        {'period': 'Daily', 'income': si.daily_income, 'roi': si.daily},
-        {'period': 'Hourly', 'income': si.hourly_income, 'roi': si.hourly}
+        {"period": "Annual", "income": si.annual_income, "roi": si.apr},
+        {"period": "Monthly", "income": si.monthly_income, "roi": si.monthly},
+        {"period": "Daily", "income": si.daily_income, "roi": si.daily},
+        {"period": "Hourly", "income": si.hourly_income, "roi": si.hourly},
     ]
     for row in results:
         roi: str = f'{round(row["roi"] * 100, 4)}'
@@ -53,11 +53,11 @@ def simple_interest(si: Simple) -> None:
 
 
 def compound_interest(comp: Compound) -> None:
-    print_markdown('---')
-    title = f'Interes Compuesto por {comp.periods[0].days} días'
+    print_markdown("---")
+    title = f"Interes Compuesto por {comp.periods[0].days} días"
     table = Table(title=title, box=box.SIMPLE)
-    header = 'Day,Yield ($),Gas ($),Profit ($),Dif ROI ($),Dif Gas ($),ROI (%)'
-    for col in header.split(','):
+    header = "Day,Yield ($),Gas ($),Profit ($),Dif ROI ($),Dif Gas ($),ROI (%)"
+    for col in header.split(","):
         table.add_column(col)
     for row in comp.periods:
         table.add_row(
@@ -67,31 +67,31 @@ def compound_interest(comp: Compound) -> None:
             str(round(row.profit, 4)),
             str(round(row.dif_profit, 4)),
             str(round(row.dif_gas, 4)),
-            str(round(row.roi, 2))
+            str(round(row.roi, 2)),
         )
     CONSOLE.print(table)
     print_markdown(NOTE)
     if comp.best:
         best_comp(comp.best)
-        recom = f'Recomendado: Cada {comp.recom.days} días.'
+        recom = f"Recomendado: Cada {comp.recom.days} días."
         CONSOLE.print(recom, style="bold green")
     else:
         print_markdown(FAILED)
 
 
 def best_comp(best_pds: List[Period]) -> None:
-    print_markdown('___')
-    table = Table(title='Frecuencias Óptimas', box=box.SIMPLE)
-    header = ['Period', 'ROI ($)', 'Profit (%)']
+    print_markdown("___")
+    table = Table(title="Frecuencias Óptimas", box=box.SIMPLE)
+    header = ["Period", "ROI ($)", "Profit (%)"]
     for item in header:
         table.add_column(item)
     for period in best_pds:
-        duration = f'Cada {period.days} días'
+        duration = f"Cada {period.days} días"
         earned = str(round(period.profit, 4))
         profit = str(round(period.roi, 2))
         table.add_row(duration, earned, profit)
     CONSOLE.print(table)
 
 
-if __name__ == '__main__':
-    print('This is not main!')
+if __name__ == "__main__":
+    print("This is not main!")
