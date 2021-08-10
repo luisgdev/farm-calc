@@ -4,10 +4,10 @@ from models import Compound, Simple
 if __name__ == '__main__':
     command: str = ''
     while command.lower() != 'x':
-        views.print_markdown("# Calculadora para Staking pool")
+        views.print_markdown("# Calculadora De Interés Simple/Compuesto")
         cap = float(input(' • Capital($): '))
         apr = float(input(' • APR....(%): '))
-        i_type = input(' • Interes (S)imple o (C)ompuesto: ')
+        i_type = input(' • Tipo de Interés (S) o (C): ')
         if i_type in ['s', 'S']:
             s_i: Simple = Simple(cap, apr)
             views.simple_interest(s_i)

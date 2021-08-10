@@ -1,4 +1,4 @@
-from typing import TypedDict, Dict, List
+from typing import List, TypedDict
 
 from rich import box
 from rich.console import Console
@@ -7,7 +7,24 @@ from rich.table import Table
 
 from models import Compound, Period, Simple
 
-CONSOLE = Console()
+CONSOLE: Console = Console()
+NOTE: str = '''
+    NOTE:
+    - dif_roi > dif_gas : Ganancia
+    - dif_roi < dif_gas : Pérdida
+    '''
+FAILED: str = '''
+    No es factible! El costo del GAS fee supera al ROI en
+    todos los escenarios posibles.
+    Causas:
+    - Poco capital para obtener ganancias en el tiempo dado.
+    - El APR no genera lo suficiente para cubrir el gas fee.
+    Recomendaciones:
+    - Hacer stake por un mayor periodo de tiempo.
+    - Reducir el Gas fee.
+    - Invertir en un Pool con mayor APR.
+    - Interes simple en lugar de compuesto.\n
+    '''
 
 
 def print_markdown(text: str) -> None:
@@ -19,8 +36,8 @@ def simple_interest(si: Simple) -> None:
     print_markdown('***')
     table: Table = Table(title='Interes Simple', box=box.SIMPLE)
     header: List[str] = ['Period', 'Income ($)', 'ROI (%)']
-    for head in header:
-        table.add_column(head)
+    for col in header:
+        table.add_column(col)
     Span = TypedDict('Span', {'period': str, 'income': float, 'roi': float})
     results: List[Span] = [
         {'period': 'Annual', 'income': si.annual_income, 'roi': si.apr},
@@ -28,21 +45,17 @@ def simple_interest(si: Simple) -> None:
         {'period': 'Daily', 'income': si.daily_income, 'roi': si.daily},
         {'period': 'Hourly', 'income': si.hourly_income, 'roi': si.hourly}
     ]
-    for item in results:
-        table.add_row(
-            item["period"],
-            f'{round(item["income"], 4)}',
-            f'{round(item["roi"] * 100, 4)}'
-        )
+    for row in results:
+        roi: str = f'{round(row["roi"] * 100, 4)}'
+        income: str = f'{round(row["income"], 4)}'
+        table.add_row(row["period"], income, roi)
     CONSOLE.print(table)
 
 
 def compound_interest(comp: Compound) -> None:
     print_markdown('---')
-    table = Table(
-        title=f'Interes Compuesto por {comp.periods[0].days} días',
-        box=box.SIMPLE
-    )
+    title = f'Interes Compuesto por {comp.periods[0].days} días'
+    table = Table(title=title, box=box.SIMPLE)
     header = 'Day,Yield ($),Gas ($),Profit ($),Dif ROI ($),Dif Gas ($),ROI (%)'
     for col in header.split(','):
         table.add_column(col)
@@ -57,39 +70,13 @@ def compound_interest(comp: Compound) -> None:
             str(round(row.roi, 2))
         )
     CONSOLE.print(table)
-    comp_note()
+    print_markdown(NOTE)
     if comp.best:
         best_comp(comp.best)
-        recom_comp(comp.recom)
+        recom = f'Recomendado: Cada {comp.recom.days} días.'
+        CONSOLE.print(recom, style="bold green")
     else:
-        comp_failed()
-
-
-def comp_note() -> None:
-    print_markdown(
-        '''
-        NOTE:
-        - dif_roi > dif_gas : Ganancia
-        - dif_roi < dif_gas : Pérdida
-        '''
-    )
-
-
-def comp_failed():
-    print_markdown(
-        '''
-        No es factible! El costo del GAS fee supera al ROI en 
-        todos los escenarios posibles.
-        Causas:
-        - Poco capital para obtener ganancias en el tiempo dado.
-        - El APR no genera lo suficiente para cubrir el gas fee.
-        Recomendaciones:
-        - Hacer stake por un mayor periodo de tiempo.
-        - Reducir el Gas fee.
-        - Invertir en un Pool con mayor APR.
-        - Interes simple en lugar de compuesto.\n
-        '''
-    )
+        print_markdown(FAILED)
 
 
 def best_comp(best_pds: List[Period]) -> None:
@@ -104,11 +91,6 @@ def best_comp(best_pds: List[Period]) -> None:
         profit = str(round(period.roi, 2))
         table.add_row(duration, earned, profit)
     CONSOLE.print(table)
-
-
-def recom_comp(pd: Period) -> None:
-    recom = f'Recomendado: Cada {pd.days} días.'
-    CONSOLE.print(recom, style="bold green")
 
 
 if __name__ == '__main__':
