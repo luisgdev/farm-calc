@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List
+from typing import Callable, List
 
 
 class Interest:
@@ -87,7 +87,7 @@ class Period:
     It includes:
     - Frequency days to execute a cycle (making the compound)
     - Spent gas fee, Profit, ROI and
-    - Difference between last and new compound cycle performance (profit and spent gas).
+    - Difference between last and new compound cycle (profit and spent gas).
 
     """
 

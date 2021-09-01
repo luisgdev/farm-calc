@@ -7,7 +7,7 @@ if __name__ == "__main__":
         views.print_markdown("# Calculadora De Interés Simple/Compuesto")
         cap = float(input(" • Capital($): "))
         apr = float(input(" • APR....(%): "))
-        i_type = input(" • Tipo de Interés (S) o (C): ")
+        i_type = input(" • Tipo de Interés (S/C): ")
         if i_type in ["s", "S"]:
             s_i: Simple = Simple(cap, apr)
             views.simple_interest(s_i)
@@ -17,5 +17,5 @@ if __name__ == "__main__":
             comp_i: Compound = Compound(cap, apr, gas, days)
             views.compound_interest(comp_i)
         else:
-            print("Debe indicar el tipo de interés.")
+            print("Debe indicar el tipo de interés -> S: Simple o C: Compuesto")
         command = input("Cualquier tecla para continuar, (X) para Salir\n> ")
