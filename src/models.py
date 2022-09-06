@@ -1,4 +1,7 @@
-from typing import Callable, List
+from typing import Callable, List, TypedDict
+
+
+Span = TypedDict("Span", {"period": str, "income": float, "roi": float})
 
 
 class Interest:

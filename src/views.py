@@ -5,9 +5,10 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
 
-from models import Compound, Period, Simple
+from models import Compound, Period, Simple, Span
 
 CONSOLE: Console = Console()
+
 NOTE: str = """
     NOTE:
     - dif_roi > dif_gas : Ganancia
@@ -28,22 +29,21 @@ FAILED: str = """
 
 
 def print_markdown(text: str) -> None:
-    md: Markdown = Markdown(text)
-    CONSOLE.print(md)
+    markdown_formatted_text: Markdown = Markdown(text)
+    CONSOLE.print(markdown_formatted_text)
 
 
-def simple_interest(si: Simple) -> None:
+def simple_interest(simple: Simple) -> None:
     print_markdown("***")
     table: Table = Table(title="Interes Simple", box=box.SIMPLE)
     header: List[str] = ["Period", "Income ($)", "ROI (%)"]
     for col in header:
         table.add_column(col)
-    Span = TypedDict("Span", {"period": str, "income": float, "roi": float})
-    results: List[Span] = [
-        {"period": "Annual", "income": si.annual_income, "roi": si.apr},
-        {"period": "Monthly", "income": si.monthly_income, "roi": si.monthly},
-        {"period": "Daily", "income": si.daily_income, "roi": si.daily},
-        {"period": "Hourly", "income": si.hourly_income, "roi": si.hourly},
+    results = [
+        Span(period="Annual", income=simple.annual_income, roi=simple.apr),
+        Span(period="Monthly", income=simple.monthly_income, roi=simple.monthly),
+        Span(period="Daily", income=simple.daily_income, roi=simple.daily),
+        Span(period="Hourly", income=simple.hourly_income, roi=simple.hourly),
     ]
     for row in results:
         roi: str = f'{round(row["roi"] * 100, 4)}'
@@ -56,7 +56,7 @@ def compound_interest(comp: Compound) -> None:
     print_markdown("---")
     title = f"Interes Compuesto por {comp.periods[0].days} días"
     table = Table(title=title, box=box.SIMPLE)
-    header = "Day,Yield ($),Gas ($),Profit ($),Dif ROI ($),Dif Gas ($),ROI (%)"
+    header = "Day,Yield($),Gas($),Profit($),Dif ROI($),Dif Gas($),ROI(%)"
     for col in header.split(","):
         table.add_column(col)
     for row in comp.periods:
