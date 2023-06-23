@@ -1,3 +1,5 @@
+""" Models module """
+
 from typing import Callable, List, TypedDict
 
 
@@ -99,18 +101,28 @@ class Period:
         self.days = days
         self.cycles = cycles
         self.spent_gas: float
-        self._yield: float
+        self.yield_: float
         self.profit: float
         self.roi: float
         self.dif_profit: float
         self.dif_gas: float
 
     def set_gas(self, gas: float) -> None:
+        """ 
+        Set gas fee.
+        :param gas: Gas fee.
+        :return: None.
+        """
         self.spent_gas = self.cycles * gas
 
     def set_interest(self, interest: float) -> None:
-        self._yield = (self.cap * (1 + interest) ** self.cycles) - self.cap
-        self.profit = self._yield - self.spent_gas
+        """ 
+        Set interest rate.
+        :param gas: Float with interest rate.
+        :return: None.
+        """
+        self.yield_ = (self.cap * (1 + interest) ** self.cycles) - self.cap
+        self.profit = self.yield_ - self.spent_gas
         self.roi = (self.profit / self.cap) * 100
 
 

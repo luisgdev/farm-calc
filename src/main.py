@@ -1,3 +1,5 @@
+""" Main module """
+
 import views
 from models import Compound, Simple
 

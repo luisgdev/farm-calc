@@ -1,4 +1,6 @@
-from typing import List, TypedDict
+""" Views module """
+
+from typing import List
 
 from rich import box
 from rich.console import Console
@@ -29,11 +31,21 @@ FAILED: str = """
 
 
 def print_markdown(text: str) -> None:
+    """ 
+    Print the text in markwdown format.
+    :params text: String with the text.
+    :return: None.
+    """
     markdown_formatted_text: Markdown = Markdown(text)
     CONSOLE.print(markdown_formatted_text)
 
 
 def simple_interest(simple: Simple) -> None:
+    """ 
+    Print the simple interest table.
+    :params simple: Simple interest object.
+    :return: None.
+    """
     print_markdown("***")
     table: Table = Table(title="Interes Simple", box=box.SIMPLE)
     header: List[str] = ["Period", "Income ($)", "ROI (%)"]
@@ -53,6 +65,11 @@ def simple_interest(simple: Simple) -> None:
 
 
 def compound_interest(comp: Compound) -> None:
+    """ 
+    Print the compound interest table.
+    :params comp: Compound interest object.
+    :return: None.
+    """
     print_markdown("---")
     title = f"Interes Compuesto por {comp.periods[0].days} días"
     table = Table(title=title, box=box.SIMPLE)
@@ -62,7 +79,7 @@ def compound_interest(comp: Compound) -> None:
     for row in comp.periods:
         table.add_row(
             str(row.days),
-            str(round(row._yield, 4)),
+            str(round(row.yield_, 4)),
             str(round(row.spent_gas, 4)),
             str(round(row.profit, 4)),
             str(round(row.dif_profit, 4)),
@@ -80,6 +97,11 @@ def compound_interest(comp: Compound) -> None:
 
 
 def best_comp(best_pds: List[Period]) -> None:
+    """ 
+    Print a table with the best periods to do compund.
+    :params best_pds: List of Period object.
+    :return: None.
+    """
     print_markdown("___")
     table = Table(title="Frecuencias Óptimas", box=box.SIMPLE)
     header = ["Period", "ROI ($)", "Profit (%)"]
